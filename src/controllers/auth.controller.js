@@ -81,11 +81,42 @@ async function login(req, res) {
         return res.status(500).json({message: `Something went wrong, try again later: ${error.message}`})
     }
 }
+async function resetPassword(req, res) {
+    try {
+        const {email, password} = req.body;
+
+        if(!email || !password) {
+            return res.status(400).json({message: 'All fields are required.'});
+        }
+        const passwordHash = await bcrypt.hash(password, 10);
+        const user = await User.findOneAndUpdate({email}, 
+            {passwordHash: passwordHash}, 
+            {returnDocument: 'after'}
+        );
+        if(!user) {
+            return res.status(401).json({message: 'Unable to find user with this email.'});
+        }
+
+        const token = createToken(user._id);
+        return res.json({
+            token,
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                phone: user.phone 
+            }
+        });
+    }
+    catch(error) {
+        console.log('Something went wrong, try again later', error);
+        return res.status(500).json({message: `Something went wrong, try again later: ${error.message}`})
+    }
+}
 
 async function me(req, res) {
     try {
         const user = await User.findById(req.userId).select('-passwordHash');
-
         if(!user) {
             return res.status(404).json({message: 'User not found.'});
         }
@@ -117,4 +148,4 @@ async function me(req, res) {
     }
 }
 
-module.exports = { login, register, me}
+module.exports = { login, register, me, resetPassword}
