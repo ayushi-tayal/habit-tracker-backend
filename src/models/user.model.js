@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const address = new mongoose.Schema({
+    _id: false,
     street: {
         type: String,
         required: true
@@ -24,6 +25,7 @@ const address = new mongoose.Schema({
 });
 
 const personalInfo = new mongoose.Schema({
+    _id:false,
     profession: {
         type: String,
     },
