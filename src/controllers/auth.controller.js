@@ -113,32 +113,30 @@ async function resetPassword(req, res) {
         return res.status(500).json({message: `Something went wrong, try again later: ${error.message}`})
     }
 }
-
-async function me(req, res) {
+async function update(req, res) {
     try {
-        const user = await User.findById(req.userId).select('-passwordHash');
-        if(!user) {
-            return res.status(404).json({message: 'User not found.'});
+        const userId = req?.body?.userid;
+        const profileData = req?.body?.profile;
+
+        console.log('data,,,,,',profileData)
+        if(!userId, !profileData?.email || !profileData?.phone) {
+            return res.status(400).json({message: 'Something went wrong, try again later.'});
         }
-
-        // const user = await User.findOne({email});
-        // if(!user) {
-        //     return res.status(401).json({message: 'Invalid Credentials'});
-        // }
-
-        // const isMatch = await bcrypt.compare(password, user.passwordHash);
-        // if(!isMatch) {
-        //     return res.status(401).json({message: 'Invalid Credentials'})
-        // }
-
-        // const createToken = createToken(newUser._id);
-
+        const user = await User.findOneAndUpdate({_id: userId}, 
+            {...profileData}, 
+            {returnDocument: 'after'}
+        );
+        console.log('..jdjf...., ', user)
+        if(!user) {
+            return res.status(401).json({message: 'Unable to find user with this email.'});
+        }
         return res.json({
             user: {
                 id: user._id,
                 username: user.username,
                 email: user.email,
-                phone: user.phone 
+                phone: user.phone,
+                personal_info: user.personal_info
             }
         });
     }
@@ -148,4 +146,21 @@ async function me(req, res) {
     }
 }
 
-module.exports = { login, register, me, resetPassword}
+async function me(req, res) {
+    try {
+        const user = await User.findById(req.userId).select('-passwordHash');
+        if(!user) {
+            return res.status(404).json({message: 'User not found.'});
+        }
+
+        return res.json({
+            user: user
+        });
+    }
+    catch(error) {
+        console.log('Something went wrong, try again later', error);
+        return res.status(500).json({message: `Something went wrong, try again later: ${error.message}`})
+    }
+}
+
+module.exports = { login, register, me, resetPassword, update}
