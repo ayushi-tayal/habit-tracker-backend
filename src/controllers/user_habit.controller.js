@@ -13,6 +13,24 @@ async function add_user_habit(req, res) {
     });
   }
 }
+
+async function update_user_habit(req, res) {
+  try {
+    const data = req.body;
+    const updatedHabit = await UserHabit.findOneAndUpdate(
+      { userId: data.userId },
+      { habitIds: data.habitIds, status: data.status },
+      { new: true }
+    );
+    return res.json(updatedHabit);
+  } catch (error) {
+    console.log("Something went wrong, try again later", error);
+    return res.status(500).json({
+      message: `Something went wrong, try again later: ${error.message}`,
+    });
+  }
+}
+
 async function get_user_habit(req, res) {
   try {
     const userId = req.params.userId;
@@ -26,4 +44,4 @@ async function get_user_habit(req, res) {
   }
 }
 
-module.exports = { add_user_habit, get_user_habit };
+module.exports = { add_user_habit, get_user_habit, update_user_habit };
