@@ -117,8 +117,6 @@ async function update(req, res) {
     try {
         const userId = req?.body?.userid;
         const profileData = req?.body?.profile;
-
-        console.log('data,,,,,',profileData)
         if(!userId, !profileData?.email || !profileData?.phone) {
             return res.status(400).json({message: 'Something went wrong, try again later.'});
         }
@@ -126,7 +124,7 @@ async function update(req, res) {
             {...profileData}, 
             {returnDocument: 'after'}
         );
-        console.log('..jdjf...., ', user)
+
         if(!user) {
             return res.status(401).json({message: 'Unable to find user with this email.'});
         }
