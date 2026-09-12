@@ -66,7 +66,7 @@ async function login(req, res) {
         }
 
         const token = createToken(user._id);
-        return res.json({
+        return res.status(200).json({
             token,
             user: {
                 id: user._id,
@@ -98,7 +98,7 @@ async function resetPassword(req, res) {
         }
 
         const token = createToken(user._id);
-        return res.json({
+        return res.status(201).json({
             token,
             user: {
                 id: user._id,
@@ -128,7 +128,7 @@ async function update(req, res) {
         if(!user) {
             return res.status(401).json({message: 'Unable to find user with this email.'});
         }
-        return res.json({
+        return res.status(201).json({
             user: {
                 id: user._id,
                 username: user.username,
@@ -151,7 +151,7 @@ async function me(req, res) {
             return res.status(404).json({message: 'User not found.'});
         }
 
-        return res.json({
+        return res.status(201).json({
             user: user
         });
     }
